@@ -1,0 +1,72 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  MEAN Stack – Docker Compose
+#
+#  Services:
+#    mongo    – MongoDB 6  (data persisted in a named volume)
+#    backend  – Node.js / Express API  (port 8080)
+#    frontend – Angular 15 served by Nginx  (port 4200 → 80)
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MongoDB ────────────────────────────────────────────────────────────────
+  mongo:
+    image: mongo:6-jammy
+    container_name: mean_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"          # expose for local tooling (e.g. Compass)
+    volumes:
+      - mongo_data:/data/db    # persist data across container restarts
+    networks:
+      - mean_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend (Node / Express) ───────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mean_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Override the localhost URL from db.config.js via the models index
+      - MONGO_URL=mongodb://mongo:27017/dd_db
+      - PORT=8080
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - mean_network
+
+  # ── Frontend (Angular → Nginx) ─────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mean_frontend
+    restart: unless-stopped
+    ports:
+      - "4200:80"              # access the app at http://localhost:4200
+    depends_on:
+      - backend
+    networks:
+      - mean_network
+
+# ── Volumes ────────────────────────────────────────────────────────────────
+volumes:
+  mongo_data:
+    driver: local
+
+# ── Networks ───────────────────────────────────────────────────────────────
+networks:
+  mean_network:
+    driver: bridge
