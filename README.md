@@ -78,7 +78,9 @@ Build Docker Image (Locally)
 docker build -t yourdockerhubusername/mean-app:latest .
 Push to Docker Hub
 docker login
-docker push yourdockerhubusername/mean-app:latest
+docker push aravind1134/mean-app:latest
+<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/172dd653-e47d-418a-a2ba-4cc9bfaba7eb" />
+
 📂 docker-compose.yml (On EC2)
 version: '3'
 
@@ -116,77 +118,25 @@ DOCKERHUB_TOKEN	Docker Hub access token
 VM_HOST	EC2 public IP
 VM_USER	ubuntu
 SSH_PRIVATE_KEY	EC2 private key
-🌐 Nginx Setup (Reverse Proxy)
 
-Install Nginx:
 
-sudo apt install nginx -y
-
-Edit config:
-
-sudo nano /etc/nginx/sites-available/default
-
-Example configuration:
-
-server {
-    listen 80;
-    
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-
-Restart Nginx:
-
-sudo systemctl restart nginx
-🚀 Deployment Flow
-
-When code is pushed to main branch:
-
-GitHub Actions builds Docker image
-
-Image pushed to Docker Hub
-
-SSH into EC2
-
-Pull latest image
-
-Restart docker-compose
-
-Application updates automatically
-
-📸 Screenshots
 1️⃣ CI/CD Configuration
-
-Add screenshot here
 
 ![CI/CD Workflow](screenshots/github-actions-workflow.png)
 2️⃣ Docker Image Build & Push
 
+<img width="1919" height="1025" alt="image" src="https://github.com/user-attachments/assets/6031e031-8202-45a6-845f-c08b4d209486" />
 
-
-
-![Docker Build](screenshots/docker-build.png)
 3️⃣ GitHub Actions Execution
-
-Add screenshot here
 
 ![Pipeline Success](screenshots/pipeline-success.png)
 4️⃣ Application Running on EC2
 
-Add screenshot here
+<img width="1919" height="1079" alt="Screenshot 2026-02-24 195116" src="https://github.com/user-attachments/assets/2bb30444-b6fa-436a-81bf-3dc9b530afad" />
 
-![App UI](screenshots/app-ui.png)
 5️⃣ Nginx Configuration
 
-Add screenshot here
 
-![Nginx Setup](screenshots/nginx-config.png)
 🧪 Testing the Deployment
 
 Open browser:
